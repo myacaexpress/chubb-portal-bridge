@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
 import OnboardingModal from './OnboardingModal';
 import SettingsModal from './SettingsModal';
+import AutomationWizard from './AutomationWizard';
 import { Settings } from 'lucide-react';
 
 interface AutomationSession {
@@ -22,6 +22,7 @@ const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showAutomationWizard, setShowAutomationWizard] = useState(false);
   const [sessions, setSessions] = useState<AutomationSession[]>([
     {
       id: '1',
@@ -48,15 +49,7 @@ const Dashboard: React.FC = () => {
   }, [user]);
 
   const startNewAutomation = () => {
-    const newSession: AutomationSession = {
-      id: Date.now().toString(),
-      title: 'Insurance Application Processing',
-      status: 'active',
-      progress: 0,
-      startTime: 'Just now',
-      duration: '0m 0s'
-    };
-    setSessions(prev => [newSession, ...prev]);
+    setShowAutomationWizard(true);
   };
 
   const getStatusColor = (status: string) => {
@@ -76,6 +69,12 @@ const Dashboard: React.FC = () => {
       default: return 'Unknown';
     }
   };
+
+  if (showAutomationWizard) {
+    return (
+      <AutomationWizard onClose={() => setShowAutomationWizard(false)} />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-chubb-blue via-chubb-blue-dark to-slate-900">
