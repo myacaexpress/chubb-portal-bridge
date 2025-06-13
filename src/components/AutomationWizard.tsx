@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, CheckCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Play, Pause } from 'lucide-react';
 
 interface AutomationStep {
   id: number;
@@ -19,7 +19,7 @@ interface AutomationWizardProps {
 
 const AutomationWizard: React.FC<AutomationWizardProps> = ({ onClose }) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [totalSteps] = useState(18);
+  const [totalSteps] = useState(7);
   const [isRunning, setIsRunning] = useState(false);
 
   const steps: AutomationStep[] = [
@@ -31,38 +31,38 @@ const AutomationWizard: React.FC<AutomationWizardProps> = ({ onClose }) => {
     },
     {
       id: 2,
-      title: "Enter login credentials",
-      description: "Enter the provided email and password into the appropriate fields and submit the login form.",
+      title: "Enter the provided email and password into the appropriate fields and submit the login form.",
+      description: "Enter login credentials and authenticate with the portal.",
       completed: false
     },
     {
       id: 3,
-      title: "Access application interface",
-      description: "Look for the interface/menu option to start creating a new application. Check available navigation and expand menus if needed.",
+      title: "Look for the interface/menu option to start creating a new application. Check available navigation and expand menus if needed.",
+      description: "Locate the new application creation interface in the portal navigation.",
       completed: false
     },
     {
       id: 4,
-      title: "Navigate to Book of Business",
-      description: "Expand and/or navigate to 'Book of Business' and/or other likely sections ('Sales Tools', 'Applications') to locate the new/test application creation interface.",
+      title: "Expand and/or navigate to 'Book of Business' and/or other likely sections ('Sales Tools', 'Applications') to locate the new/test application creation interface.",
+      description: "Navigate through the portal sections to find application creation options.",
       completed: false
     },
     {
       id: 5,
-      title: "Check Sales Tools menu",
-      description: "Click on the 'Sales Tools' menu option to check if it offers an option to create a new or test application.",
+      title: "Click on the 'Sales Tools' menu option to check if it offers an option to create a new or test application.",
+      description: "Check the Sales Tools menu for application creation functionality.",
       completed: false
     },
     {
       id: 6,
-      title: "Access Applications menu",
-      description: "Click the 'Applications' menu item to see if it offers an option to create a new or test application.",
+      title: "Click the 'Applications' menu item to see if it offers an option to create a new or test application.",
+      description: "Explore the Applications menu for new application options.",
       completed: false
     },
     {
       id: 7,
-      title: "Start new application",
-      description: "Click the 'Start a New Application' button to begin the process.",
+      title: "Click the 'Start a New Application' button to begin.",
+      description: "Initiate the new application creation process.",
       completed: false
     }
   ];
@@ -81,156 +81,167 @@ const AutomationWizard: React.FC<AutomationWizardProps> = ({ onClose }) => {
         }
         return prev + 1;
       });
-    }, 2000);
+    }, 3000);
+  };
+
+  const pauseAutomation = () => {
+    setIsRunning(false);
   };
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-chubb-blue via-chubb-blue-dark to-slate-900 z-50">
-      {/* Header */}
-      <header className="glass-effect border-b border-white/20">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onClose}
-                className="text-white hover:bg-white/10"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Dashboard
-              </Button>
-              <div>
-                <h1 className="text-white text-xl font-bold">Insurance Application Automation</h1>
-                <p className="text-white/70 text-sm">Step-by-step automation process</p>
-              </div>
+    <div className="fixed inset-0 bg-background z-50 flex">
+      {/* Left Panel - Automation Steps */}
+      <div className="w-96 bg-card border-r border-border flex flex-col">
+        {/* Header */}
+        <div className="p-4 border-b border-border">
+          <div className="flex items-center justify-between mb-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="text-foreground hover:bg-accent"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            <Badge variant="secondary" className="bg-chubb-blue text-white">
+              Step {currentStep}/{totalSteps}
+            </Badge>
+          </div>
+          
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm text-muted-foreground">Progress</span>
+              <span className="text-sm text-muted-foreground">{Math.round(progress)}%</span>
             </div>
-            <div className="flex items-center space-x-4">
-              <Badge className="bg-orange-500 text-white">
-                Step {currentStep}/{totalSteps}
+            <Progress value={progress} className="h-2" />
+          </div>
+
+          <div className="flex gap-2">
+            {!isRunning ? (
+              <Button
+                onClick={startAutomation}
+                className="flex-1 bg-chubb-blue hover:bg-chubb-blue-dark text-white"
+                disabled={currentStep >= totalSteps}
+              >
+                <Play className="w-4 h-4 mr-2" />
+                {currentStep >= totalSteps ? 'Completed' : 'Start'}
+              </Button>
+            ) : (
+              <Button
+                onClick={pauseAutomation}
+                variant="outline"
+                className="flex-1"
+              >
+                <Pause className="w-4 h-4 mr-2" />
+                Pause
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Steps List */}
+        <div className="flex-1 overflow-y-auto p-4">
+          <div className="space-y-3">
+            {steps.map((step, index) => (
+              <div
+                key={step.id}
+                className={`p-3 rounded-lg border transition-all ${
+                  index + 1 === currentStep
+                    ? 'bg-chubb-blue/10 border-chubb-blue'
+                    : index + 1 < currentStep
+                    ? 'bg-green-500/10 border-green-500'
+                    : 'bg-muted/50 border-border'
+                }`}
+              >
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0 mt-0.5">
+                    {index + 1 < currentStep ? (
+                      <CheckCircle className="w-5 h-5 text-green-500" />
+                    ) : (
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        index + 1 === currentStep
+                          ? 'border-chubb-blue bg-chubb-blue'
+                          : 'border-muted-foreground'
+                      }`}>
+                        {index + 1 === currentStep && (
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-sm leading-tight mb-1">
+                      {step.title}
+                    </h3>
+                    <p className="text-xs text-muted-foreground leading-tight">
+                      {step.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-4 border-t border-border">
+          <div className="text-xs text-muted-foreground text-center">
+            Task 1/1 • Total time: 5m 27s
+          </div>
+        </div>
+      </div>
+
+      {/* Right Panel - Browser Canvas */}
+      <div className="flex-1 flex flex-col bg-muted/30">
+        {/* Canvas Header */}
+        <div className="p-4 border-b border-border bg-card">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold">Browser Automation</h2>
+              <p className="text-sm text-muted-foreground">
+                Live view of automation progress
+              </p>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Badge variant={isRunning ? "default" : "secondary"} className="bg-chubb-blue text-white">
+                {isRunning ? 'Running' : 'Ready'}
               </Badge>
             </div>
           </div>
         </div>
-      </header>
 
-      <div className="container mx-auto px-6 py-8">
-        {/* Progress Bar */}
-        <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white mb-8">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm text-white/70">Overall Progress</span>
-              <span className="text-sm text-white/70">{Math.round(progress)}%</span>
-            </div>
-            <Progress value={progress} className="h-3" />
-            <div className="flex justify-between mt-2 text-xs text-white/60">
-              <span>Task 1/1</span>
-              <span>Total time: 5m 27s</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Automation Steps */}
-          <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white">
-            <CardHeader>
-              <CardTitle className="text-xl">Automation Steps</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {steps.map((step, index) => (
-                  <div
-                    key={step.id}
-                    className={`p-4 rounded-lg border transition-all ${
-                      index + 1 === currentStep
-                        ? 'bg-orange-500/20 border-orange-500'
-                        : index + 1 < currentStep
-                        ? 'bg-green-500/20 border-green-500'
-                        : 'bg-white/5 border-white/10'
-                    }`}
-                  >
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 mt-1">
-                        {index + 1 < currentStep ? (
-                          <CheckCircle className="w-5 h-5 text-green-400" />
-                        ) : (
-                          <div className={`w-5 h-5 rounded-full border-2 ${
-                            index + 1 === currentStep
-                              ? 'border-orange-500 bg-orange-500'
-                              : 'border-white/30'
-                          }`}>
-                            {index + 1 === currentStep && (
-                              <div className="w-1 h-1 bg-white rounded-full m-2"></div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-sm mb-1">{step.title}</h3>
-                        <p className="text-xs text-white/70">{step.description}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+        {/* Canvas Area */}
+        <div className="flex-1 p-4">
+          <div className="h-full bg-card rounded-lg border border-border flex items-center justify-center">
+            {currentStep >= totalSteps ? (
+              <div className="text-center">
+                <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Automation Complete!</h3>
+                <p className="text-muted-foreground mb-4">
+                  Successfully navigated to Chubb portal and started new application
+                </p>
+                <Button onClick={onClose} className="bg-chubb-blue hover:bg-chubb-blue-dark text-white">
+                  Return to Dashboard
+                </Button>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Control Panel */}
-          <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white">
-            <CardHeader>
-              <CardTitle className="text-xl">Control Panel</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <div>
-                  <h3 className="font-semibold mb-2">Current Task</h3>
-                  <p className="text-white/70 text-sm">
-                    {steps[currentStep - 1]?.title || "Automation completed"}
-                  </p>
+            ) : (
+              <div className="text-center">
+                <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <div className="w-8 h-8 border-2 border-chubb-blue border-t-transparent rounded-full animate-spin"></div>
                 </div>
-
-                <div>
-                  <h3 className="font-semibold mb-2">Status</h3>
-                  <Badge className={`${
-                    isRunning ? 'bg-orange-500' : currentStep >= totalSteps ? 'bg-green-500' : 'bg-blue-500'
-                  } text-white`}>
-                    {isRunning ? 'Running' : currentStep >= totalSteps ? 'Completed' : 'Ready'}
-                  </Badge>
-                </div>
-
-                <div className="pt-4">
-                  {!isRunning && currentStep < totalSteps && (
-                    <Button
-                      onClick={startAutomation}
-                      className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-                    >
-                      🤖 Start Automation
-                    </Button>
-                  )}
-                  
-                  {isRunning && (
-                    <Button
-                      disabled
-                      className="w-full bg-orange-500/50 text-white cursor-not-allowed"
-                    >
-                      Automation Running...
-                    </Button>
-                  )}
-
-                  {currentStep >= totalSteps && (
-                    <Button
-                      onClick={onClose}
-                      className="w-full bg-green-500 hover:bg-green-600 text-white"
-                    >
-                      ✅ Return to Dashboard
-                    </Button>
-                  )}
-                </div>
+                <h3 className="text-lg font-semibold mb-2">
+                  {isRunning ? 'Automation in Progress' : 'Ready to Start'}
+                </h3>
+                <p className="text-muted-foreground">
+                  {isRunning 
+                    ? `Currently executing: ${steps[currentStep - 1]?.title || 'Preparing...'}`
+                    : 'Click Start to begin the automation process'
+                  }
+                </p>
               </div>
-            </CardContent>
-          </Card>
+            )}
+          </div>
         </div>
       </div>
     </div>
